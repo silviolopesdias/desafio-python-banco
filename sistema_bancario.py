@@ -60,6 +60,8 @@ def saque(*, saldo, valor, extrato, limite_valor, numero_saques, limite_saques):
 
     return saldo, extrato
 
+
+
 def exibir_extrato(saldo, /, *, extrato):
 
      print("================ EXTRATO =================")
@@ -67,22 +69,6 @@ def exibir_extrato(saldo, /, *, extrato):
      print(f"\nSaldo:\t\tR$ {saldo:.2f}")
      print("==========================================")
      
-def novo_usuario(usuarios):
-
-    cpf = input("Digite o numero do cpf (somente numeros): ")
-    usuario = filtrar_usuario(cpf, usuarios)
-
-    if usuario:
-      print(" Já existe usuario com este CPF")
-      return
-    
-    nome = input("Informe o nome completo por favor: ")
-    data_nascimento = input("Informe a data de nascimento por favor (dd-mm-aaaa): ") 
-    endereco = input("Informe o endereço por favor (logradouro, nro - bairro - cidade/sigla estado: ")
-
-    usuarios.append({"nome": nome, "data_nascimento": data_nascimento, "cpf": cpf, "endereco": endereco})
- 
-    print(" Usuário criado com sucesso !")
 
 
 def filtrar_usuario(cpf, usuarios):
@@ -91,6 +77,25 @@ def filtrar_usuario(cpf, usuarios):
     
     return usuarios_filtrados[0] if usuarios_filtrados else None
 
+
+
+def novo_usuario(usuarios):
+
+    cpf = input("Digite o numero do cpf por favor (somente numeros): ")
+    usuario = filtrar_usuario(cpf, usuarios)
+
+    if usuario:
+      print(" Ops, algo deu errado ! Já existe usuario com este CPF")
+      
+      return
+    
+    nome = input("Informe o nome completo por favor: ")
+    data_nascimento = input("Informe a data de nascimento por favor (dd-mm-aaaa): ") 
+    endereco = input("Informe o endereço por favor (logradouro, nro - bairro - cidade/sigla estado: ")
+
+    usuarios.append({"nome": nome, "data_nascimento": data_nascimento, "cpf": cpf, "endereco": endereco})
+ 
+    print("Usuário criado com sucesso !")
 
 
 def nova_conta(agencia, numero_conta, usuarios):
@@ -103,6 +108,7 @@ def nova_conta(agencia, numero_conta, usuarios):
         return {"agencia": agencia, "numero_conta": numero_conta, "usuario": usuario}
 
     print("Ops, algo deu errado! Usuário não encontrado")
+
 
 def listar_contas(contas):
     for conta in contas:
@@ -118,8 +124,7 @@ def listar_contas(contas):
 
 def main():
     LIMITE_SAQUES = 3
-    AGENCIA = "0001"
-     
+    AGENCIA = "0001"    
     
     saldo = 0
     limite_valor = 500
@@ -137,8 +142,7 @@ def main():
 
            valor = float(input("Digite o valor para depósito: "))
 
-           saldo, extrato = deposito(saldo, valor, extrato)
-            
+           saldo, extrato = deposito(saldo, valor, extrato)           
 
 
         elif opcao == "s":
@@ -157,7 +161,7 @@ def main():
               
         elif opcao == "e":
 
-            exibir_extrato(saldo,extrato=extrato)
+            exibir_extrato(saldo, extrato=extrato)
 
         elif opcao == "nu":
             novo_usuario(usuarios)
