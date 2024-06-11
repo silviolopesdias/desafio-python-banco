@@ -23,4 +23,7 @@
 - A operação listar contas(lc), permite ao usuário listar as contas criadas, mostrando a agencia, numeero da conta e o titular da mesma.
 
 
+#### Foi utilizado classes, e funções para implementar o sistema.
+
+
 ##### Para Sair do programa, digite (q)
