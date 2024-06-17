@@ -6,7 +6,6 @@ from pathlib import Path
 ROOT_PATH = Path(__file__).parent
 
 
-
 class ContasInterador:
     def __init__(self, contas):
         self.contas = contas
@@ -14,10 +13,10 @@ class ContasInterador:
 
     def __iter__(self):
         return self
-    
+
     def __next__(self):
         try:
-            conta =self.contas[self._index]
+            conta = self.contas[self._index]
             return f"""\
             Agência:\t{conta.agencia}
             C/C:\t\t{conta.numero}
@@ -30,15 +29,13 @@ class ContasInterador:
             self._index += 1
 
 
-
-
 class Cliente:
     def __init__(self, endereco):
         self.endereco = endereco
         self.contas = []
         self.indice_conta = 0
 
-    def realizar_transacao(self, conta, transacao):         
+    def realizar_transacao(self, conta, transacao):
         if len(conta.historico.transacoes_do_dia()) >= 10:
             print("Ops, algo deu errado, Você exedeu o numero de transações por hoje!")
             return
@@ -55,7 +52,7 @@ class PessoaFisica(Cliente):
         self.nome = nome
         self.data_nascimento = data_nascimento
         self.cpf = cpf
-    
+
     def __repr__(self) -> str:
         return f"<{self.__class__.__name__}: ('{self.nome}','{self.cpf}')>"
 
@@ -144,12 +141,9 @@ class ContaCorrente(Conta):
             return super().sacar(valor)
 
         return False
-       
-    
+
     def __repr__(self) -> str:
         return f"<{self.__class__.__name__}: ('{self.agencia}', '{self.numero}', '{self.cliente.nome}')>"
-
-
 
     def __str__(self):
         return f"""\
@@ -175,7 +169,8 @@ class Historico:
                 "data": datetime.now().strftime("%d-%m-%Y %H:%M:%S"),
             }
         )
-    def gerar_relatorio(self,tipo_transacao=None):
+
+    def gerar_relatorio(self, tipo_transacao=None):
         for transacao in self._transacoes:
             if tipo_transacao is None or transacao["tipo"].lower() == tipo_transacao.lower():
                 yield transacao
@@ -188,7 +183,6 @@ class Historico:
             if data_atual == data_transacao:
                 transacoes.append(transacao)
         return transacoes
-
 
 
 class Transacao(ABC):
@@ -237,14 +231,13 @@ def log_transacao(func):
         resultado = func(*args, **kwargs)
         data_hora = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-  
         with open(ROOT_PATH / "log.txt", "a") as arquivo:
-         arquivo.write(
-            f"[{data_hora}] Função '{func.__name__}' executada com argumentos {args} e {kwargs}. Retornou {resultado}\n")
-         
-    
+            arquivo.write(
+                f"[{data_hora}] Função '{func.__name__}' executada com argumentos {args} e {kwargs}. Retornou {resultado}\n"
+            )
+
         return resultado
-    
+
     return envelope
 
 
@@ -294,6 +287,7 @@ def depositar(clientes):
 
     cliente.realizar_transacao(conta, transacao)
 
+
 @log_transacao
 def sacar(clientes):
     cpf = input("Informe o CPF do cliente: ")
@@ -312,6 +306,7 @@ def sacar(clientes):
 
     cliente.realizar_transacao(conta, transacao)
 
+
 @log_transacao
 def exibir_extrato(clientes):
     cpf = input("Informe o CPF do cliente: ")
@@ -326,19 +321,19 @@ def exibir_extrato(clientes):
         return
 
     print("\n================ EXTRATO ================")
-   
+
     extrato = ""
     tem_transacao = False
-    for transacao in conta.historico.gerar_relatorio(): #tipo_transacoes="saque"
+    for transacao in conta.historico.gerar_relatorio():  # tipo_transacoes="saque"
         tem_transacao = True
         extrato += f"\n{transacao['data']}\n{transacao['tipo']}:\n\tR$ {transacao['valor']:.2f}"
     if not tem_transacao:
-        extrato = "Não foram realizadas movimentações." 
-           
+        extrato = "Não foram realizadas movimentações."
 
     print(extrato)
     print(f"\nSaldo:\n\tR$ {conta.saldo:.2f}")
     print("==========================================")
+
 
 @log_transacao
 def criar_cliente(clientes):
@@ -358,6 +353,7 @@ def criar_cliente(clientes):
     clientes.append(cliente)
 
     print("\nCliente criado com sucesso!")
+
 
 @log_transacao
 def criar_conta(numero_conta, clientes, contas):
