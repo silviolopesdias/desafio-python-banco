@@ -1,6 +1,9 @@
 import textwrap
 from abc import ABC, abstractmethod
 from datetime import datetime
+from pathlib import Path
+
+ROOT_PATH = Path(__file__).parent
 
 
 
@@ -19,10 +22,10 @@ class ContasInterador:
             Agência:\t{conta.agencia}
             C/C:\t\t{conta.numero}
             Titular:\t{conta.cliente.nome}
-            Saldo:\t\tR$ {conta.saldo:.2}
+            Saldo:\t\tR$ {conta.saldo:.2f}
         """
         except IndexError:
-            raise StopAsyncIteration
+            raise StopIteration
         finally:
             self._index += 1
 
@@ -36,7 +39,7 @@ class Cliente:
         self.indice_conta = 0
 
     def realizar_transacao(self, conta, transacao):         
-        if len(conta.historico.transacoes_do_dia()) >= 5:
+        if len(conta.historico.transacoes_do_dia()) >= 10:
             print("Ops, algo deu errado, Você exedeu o numero de transações por hoje!")
             return
 
@@ -52,6 +55,9 @@ class PessoaFisica(Cliente):
         self.nome = nome
         self.data_nascimento = data_nascimento
         self.cpf = cpf
+    
+    def __repr__(self) -> str:
+        return f"<{self.__class__.__name__}: ('{self.nome}','{self.cpf}')>"
 
 
 class Conta:
@@ -138,6 +144,12 @@ class ContaCorrente(Conta):
             return super().sacar(valor)
 
         return False
+       
+    
+    def __repr__(self) -> str:
+        return f"<{self.__class__.__name__}: ('{self.agencia}', '{self.numero}', '{self.cliente.nome}')>"
+
+
 
     def __str__(self):
         return f"""\
@@ -223,7 +235,14 @@ class Deposito(Transacao):
 def log_transacao(func):
     def envelope(*args, **kwargs):
         resultado = func(*args, **kwargs)
-        print(f"{datetime.now()}: {func.__name__.upper()}")
+        data_hora = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+  
+        with open(ROOT_PATH / "log.txt", "a") as arquivo:
+         arquivo.write(
+            f"[{data_hora}] Função '{func.__name__}' executada com argumentos {args} e {kwargs}. Retornou {resultado}\n")
+         
+    
         return resultado
     
     return envelope
@@ -310,7 +329,7 @@ def exibir_extrato(clientes):
    
     extrato = ""
     tem_transacao = False
-    for transacao in conta.historico.gerar_relatorio():
+    for transacao in conta.historico.gerar_relatorio(): #tipo_transacoes="saque"
         tem_transacao = True
         extrato += f"\n{transacao['data']}\n{transacao['tipo']}:\n\tR$ {transacao['valor']:.2f}"
     if not tem_transacao:
@@ -357,7 +376,7 @@ def criar_conta(numero_conta, clientes, contas):
 
 
 def listar_contas(contas):
-    for conta in contas:
+    for conta in ContasInterador(contas):
         print("=" * 100)
         print(textwrap.dedent(str(conta)))
 
